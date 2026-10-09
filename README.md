@@ -39,3 +39,11 @@ No return/refund/cancel workflow yet (Phase 2). No real payment integration, HTT
 
 ## Phase 2 core
 Held orders, cancellations, atomic partial refunds with optional restock, ledger-reconciled net revenue, customer soft-delete and employee lifecycle controls are available through the API and UI. See `docs/API.md` and `docs/phase-2-release-report.md`.
+
+## Chế độ khởi động và bảo mật phiên (2.1.0)
+
+Mặc định npm start chạy APP_MODE=demo trên 127.0.0.1 và giữ dữ liệu mẫu. Xem docs/release-2.1.0-operational-foundation.md và docs/operations-checklist.md. Chế độ real fail-closed và không được bật nếu chưa có phê duyệt, DB_FILE rõ ràng và HTTPS proxy tin cậy.
+
+## Ca thu ngân và hóa đơn (2.2.0)
+
+Thanh toán/hoàn tiền mặt yêu cầu người thao tác mở ca. Ca theo dõi tiền đầu ca, thu/chi, tiền mặt bán/hoàn và chênh lệch kiểm đếm. Hóa đơn 58/80 mm là print preview của trình duyệt, chưa phải tích hợp máy in. Xem docs/release-2.2.0-shifts-receipts.md.

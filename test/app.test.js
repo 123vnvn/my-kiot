@@ -6,7 +6,7 @@ let app,base,file;
 async function call(url,opt={}){const r=await fetch(base+url,opt),text=await r.text();return{status:r.status,data:text?JSON.parse(text):{},headers:r.headers}}
 const json=(body,extra={})=>({method:'POST',headers:{'content-type':'application/json',...extra},body:JSON.stringify(body)});
 const headers=(token,extra={})=>({'content-type':'application/json',authorization:'Bearer '+token,...extra});
-async function login(email='owner@demo.local',password='Demo@123'){const x=await call('/api/login',json({email,password}));return x}
+async function login(email='owner@demo.local',password='Demo@123'){const x=await call('/api/login',json({email,password},{'x-legacy-bearer':'1'}));if(x.data.token)await call('/api/shifts/open',{method:'POST',headers:headers(x.data.token,{'idempotency-key':'shift-'+email}),body:JSON.stringify({store_id:x.data.user.store_id||1,opening_cash:0})});return x}
 test.before(async()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'sales-phase1-'));file=path.join(dir,'test.db');app=createApp({dbFile:file});await new Promise(r=>app.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+app.address().port});
 test.after(async()=>{await new Promise(r=>app.close(r));app.db.close();fs.rmSync(path.dirname(file),{recursive:true,force:true})});
 
@@ -62,7 +62,7 @@ test('order totals, stock, idempotency and reports reconcile',async()=>{
 });
 
 test('migrations and credential-free audit records persist after reopen',()=>{
-  assert.equal(app.db.prepare('PRAGMA integrity_check').get().integrity_check,'ok');assert.equal(app.db.prepare('SELECT max(version) v FROM schema_migrations').get().v,2);
+  assert.equal(app.db.prepare('PRAGMA integrity_check').get().integrity_check,'ok');assert.equal(app.db.prepare('SELECT max(version) v FROM schema_migrations').get().v,5);
   const audits=app.db.prepare('SELECT action,detail FROM audit_log').all();assert.ok(audits.some(x=>x.action==='auth.login'));assert.ok(audits.some(x=>x.action==='order.create'));assert.equal(JSON.stringify(audits).includes('Demo@123'),false);assert.equal(JSON.stringify(audits).includes('wrong-password'),false);
   app.db.exec('PRAGMA wal_checkpoint(FULL)');const second=open(file);assert.equal(second.prepare('PRAGMA integrity_check').get().integrity_check,'ok');assert.equal(second.prepare('SELECT count(*) n FROM orders').get().n,1);second.close();
 });

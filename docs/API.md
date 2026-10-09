@@ -1,6 +1,6 @@
 # API v2 (local demo)
 
-Base URL: `http://127.0.0.1:4173`. JSON mutations require `Content-Type: application/json`; authenticated routes require `Authorization: Bearer <token>`. Mutation idempotency keys are 8–128 characters.
+Base URL mặc định: `http://127.0.0.1:4173`. Trình duyệt dùng cookie HttpOnly và `X-CSRF-Token` cho mutation; bearer chỉ là compatibility tạm thời khi login gửi `x-legacy-bearer: 1`. JSON mutations require `Content-Type: application/json`; idempotency keys dài 8–128 ký tự.
 
 | Method | Path | Roles | Behavior |
 |---|---|---|---|
@@ -21,3 +21,16 @@ Base URL: `http://127.0.0.1:4173`. JSON mutations require `Content-Type: applica
 | GET | /api/reports/revenue | owner, manager | Gross sales, refunds and net revenue derived from immutable financial ledger. |
 
 Financial and return ledger rows are append-only (database triggers reject update/delete). All order state transitions and stock/refund effects run inside `BEGIN IMMEDIATE` transactions.
+
+## Ca thu ngân và hóa đơn (v3)
+
+| Method | Path | Roles | Behavior |
+|---|---|---|---|
+| GET | /api/shifts/current?store_id= | owner, manager, cashier | Ca mở của tài khoản tại cửa hàng. |
+| GET | /api/shifts?store_id= | owner, manager, cashier | Owner/manager xem cửa hàng; cashier chỉ xem ca của mình. |
+| POST | /api/shifts/open | owner, manager, cashier | Mở ca với opening_cash; idempotent. |
+| POST | /api/shifts/:id/movements | owner, manager, cashier | Pay-in/payout có lý do trên ca đang mở của mình. |
+| POST | /api/shifts/:id/close | owner, manager, cashier | Chốt expected/count/difference; idempotent. |
+| GET | /api/orders/:id/receipt?store_id= | owner, manager, cashier | Dữ liệu hóa đơn/reprint store-scoped từ bản ghi thật. |
+
+Cash payment/refund yêu cầu ca mở và được gắn payments.shift_id.

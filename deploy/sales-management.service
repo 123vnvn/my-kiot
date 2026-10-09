@@ -1,0 +1,20 @@
+[Unit]
+Description=Sales Management MVP Service
+After=network.target
+
+[Service]
+Type=simple
+User=node
+WorkingDirectory=/opt/sales-management-mvp
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+Environment=PORT=4173
+Environment=NODE_ENV=production
+Environment=TRUST_PROXY=1
+Environment=APP_MODE=demo
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,3 +1,16 @@
+# 2.2.0 — 2026-10-09
+- Added cashier shift opening, immutable cash movements, cash payment/refund linkage, and counted-vs-expected close reconciliation.
+- Cash sales/refunds now require the acting user's open store shift; non-cash remains independent.
+- Added store-scoped receipt API and browser print preview for 58/80 mm layouts.
+- Added isolated phase-3 tests, live API/static smoke script, release report, and updated readiness matrix.
+
+# 2.1.0 — 2026-10-09
+- HttpOnly cookie sessions, Origin/CSRF checks, reduced login rate limit, logout revocation.
+- Removed browser localStorage bearer use; retained explicit temporary bearer compatibility.
+- Externalized app JS and removed unsafe-inline from script CSP.
+- Added accessible validated refund dialog and fail-closed real-data startup gate.
+- Added operational release evidence/checklist and PostgreSQL rollout assessment.
+
 # Changelog
 
 ## 2.0.0 — Phase 2 core

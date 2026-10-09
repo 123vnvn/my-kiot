@@ -3,3 +3,8 @@ data/*.db-*
 backups/
 node_modules/
 *.log
+.env
+.env.*
+server-error.log
+server.log
+.DS_Store
